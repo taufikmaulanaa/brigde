@@ -124,15 +124,15 @@ def rename_files(dir : String, mapping : Hash(String, String))
   end
 
   puts "\r" + " " * 50 + "\r" # Clear progress line
-  
+
   # Cari no_doc yang tidak ditemukan filenya
   missing_docs = mapping.keys.to_set - found_docs
-  
+
   puts "📊 Summary:"
   puts "   Total files scanned: #{total_files}"
   puts "   Files renamed: #{renamed_files}"
   puts "   Files skipped: #{total_files - renamed_files}"
-  
+
   if missing_docs.size > 0
     puts
     puts "⚠️  Dokumen yang tidak ditemukan filenya (#{missing_docs.size}):"
