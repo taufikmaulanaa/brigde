@@ -23,9 +23,23 @@ jobs:
         crystal-version: 'latest'
         
     - name: Install dependencies
+      shell: pwsh
       run: shards install
       
+    - name: Prepare build directory
+      shell: pwsh
+      run: |
+        # Create bin directory if it doesn't exist
+        if (-not (Test-Path bin)) {
+          New-Item -ItemType Directory -Path bin | Out-Null
+        }
+        # Remove old executable if exists (to avoid lock issues)
+        if (Test-Path bin/bridge.exe) {
+          Remove-Item bin/bridge.exe -Force
+        }
+      
     - name: Build for Windows
+      shell: pwsh
       run: crystal build src/bridge.cr --release -o bin/bridge.exe
       
     - name: Upload Windows executable
