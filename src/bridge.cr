@@ -89,6 +89,7 @@ def rename_files(dir : String, mapping : Hash(String, String))
   total_files = all_files.size
   processed_files = 0
   renamed_files = 0
+  found_docs = Set(String).new
 
   puts "📁 Ditemukan #{total_files} file untuk diproses..."
   puts
@@ -111,6 +112,7 @@ def rename_files(dir : String, mapping : Hash(String, String))
 
         new_path = File.join(replaced_dir, new_name)
         renamed_files += 1
+        found_docs.add(no_doc)
 
         puts "\r✅ Copy & Rename (##{renamed_files}):"
         puts "   #{filename} -> outputs/#{new_name}"
@@ -122,10 +124,24 @@ def rename_files(dir : String, mapping : Hash(String, String))
   end
 
   puts "\r" + " " * 50 + "\r" # Clear progress line
+  
+  # Cari no_doc yang tidak ditemukan filenya
+  missing_docs = mapping.keys.to_set - found_docs
+  
   puts "📊 Summary:"
   puts "   Total files scanned: #{total_files}"
   puts "   Files renamed: #{renamed_files}"
   puts "   Files skipped: #{total_files - renamed_files}"
+  
+  if missing_docs.size > 0
+    puts
+    puts "⚠️  Dokumen yang tidak ditemukan filenya (#{missing_docs.size}):"
+    missing_docs.each do |doc|
+      puts "   ❌ #{doc} -> #{mapping[doc]}"
+    end
+  else
+    puts "✅ Semua dokumen berhasil ditemukan dan diproses!"
+  end
 end
 
 # Ambil argumen dari command line atau gunakan default
