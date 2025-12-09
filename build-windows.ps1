@@ -37,9 +37,10 @@ Write-Host "📦 Installing dependencies..." -ForegroundColor Cyan
 shards install
 Write-Host ""
 
-# Build for Windows
-Write-Host "🔨 Building for Windows..." -ForegroundColor Cyan
-crystal build src/bridge.cr --release -o bin/bridge.exe
+# Build for Windows dengan static linking
+Write-Host "🔨 Building for Windows (static linking)..." -ForegroundColor Cyan
+Write-Host "   Menggunakan static linking untuk menghindari dependency DLL" -ForegroundColor Gray
+crystal build src/bridge.cr --release --static -o bin/bridge.exe
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""

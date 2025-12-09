@@ -38,9 +38,11 @@ jobs:
           Remove-Item bin/bridge.exe -Force
         }
       
-    - name: Build for Windows
+    - name: Build for Windows (static linking)
       shell: pwsh
-      run: crystal build src/bridge.cr --release -o bin/bridge.exe
+      run: |
+        # Build dengan static linking untuk menghindari dependency DLL
+        crystal build src/bridge.cr --release --static -o bin/bridge.exe
       
     - name: Upload Windows executable
       uses: actions/upload-artifact@v4

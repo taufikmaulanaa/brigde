@@ -144,7 +144,10 @@ shards build
    # Build untuk Windows (HANYA di Windows!)
    .\build-windows.ps1
    
-   # Atau manual
+   # Atau manual dengan static linking (recommended)
+   crystal build src/bridge.cr --release --static -o bin/bridge.exe
+   
+   # Atau tanpa static linking (memerlukan DLL)
    crystal build src/bridge.cr --release -o bin/bridge.exe
    ```
    
@@ -211,6 +214,21 @@ Untuk penggunaan sehari-hari, gunakan executable yang sudah di-build:
 ```
 **Solusi**: Masukkan hanya satu huruf kolom (A, B, C, dll).
 
+### Error DLL tidak ditemukan (Windows)
+```
+The code execution cannot proceed because pcre2-8.dll was not found
+```
+**Solusi**: 
+- Build dengan static linking menggunakan flag `--static`:
+  ```powershell
+  crystal build src/bridge.cr --release --static -o bin/bridge.exe
+  ```
+- Atau copy DLL yang diperlukan ke folder yang sama dengan executable:
+  - `pcre2-8.dll`
+  - `libxml2.dll`
+  - `libiconv.dll`
+  - DLL lainnya dari folder Crystal installation
+
 ## Development
 
 Untuk development:
@@ -235,7 +253,10 @@ shards run
 # Run dengan arguments
 shards run -- sample.xlsx files
 
-# Build untuk production
+# Build untuk production (dengan static linking - recommended)
+crystal build src/bridge.cr --release --static -o bin/bridge.exe
+
+# Build tanpa static linking (memerlukan DLL)
 crystal build src/bridge.cr --release -o bin/bridge.exe
 ```
 
@@ -254,6 +275,40 @@ Proyek ini menggunakan GitHub Actions untuk build otomatis untuk Windows. Setiap
 - **Workflow file**: `.github/workflows/build-windows.yml`
 - **Artifact**: Executable Windows akan tersedia sebagai artifact di GitHub Actions
 - **Release**: Saat membuat release, executable akan otomatis di-attach ke release
+
+### 📥 Download Executable Setelah Build Sukses
+
+Setelah GitHub Actions build sukses, ikuti langkah berikut untuk download executable:
+
+1. **Buka GitHub Repository** → Tab **Actions**
+2. **Pilih workflow run** yang sukses (ada centang hijau ✅)
+3. **Scroll ke bawah** ke bagian **Artifacts**
+4. **Klik "bridge-windows"** untuk download
+5. **Extract file** `bridge.exe` dari zip yang di-download
+6. **Jalankan** executable di Windows:
+   ```powershell
+   .\bridge.exe [excel_file] [source_folder]
+   ```
+
+### 🎯 Membuat Release untuk Distribusi
+
+Untuk membuat release resmi dengan executable Windows:
+
+1. **Buat Release di GitHub:**
+   - Buka repository → **Releases** → **Create a new release**
+   - Isi **Tag version** (contoh: `v1.0.0`)
+   - Isi **Release title** dan **Description**
+   - Klik **Publish release**
+
+2. **GitHub Actions akan otomatis:**
+   - Build executable Windows
+   - Attach `bridge.exe` ke release
+   - File akan tersedia di halaman release untuk di-download
+
+3. **Download dari Release:**
+   - Buka halaman **Releases**
+   - Download `bridge.exe` dari **Assets**
+   - Tidak perlu extract, langsung bisa digunakan!
 
 ## Contributors
 
