@@ -229,6 +229,52 @@ The code execution cannot proceed because pcre2-8.dll was not found
   - `libiconv.dll`
   - DLL lainnya dari folder Crystal installation
 
+### Aplikasi tidak jalan di Windows 64-bit
+Jika aplikasi tidak berjalan di Windows 64-bit, kemungkinan executable di-build untuk 32-bit atau ada masalah dengan architecture.
+
+**Solusi**:
+1. **Pastikan build untuk Windows 64-bit:**
+   ```powershell
+   # Gunakan script build yang sudah diperbaiki
+   .\build-windows.ps1
+   ```
+
+2. **Verifikasi executable adalah 64-bit:**
+   - Buka PowerShell di folder `bin`
+   - Jalankan: `[System.Reflection.Assembly]::LoadFile("$PWD\bridge.exe").GetName().ProcessorArchitecture`
+   - Atau gunakan tool seperti `file` (dari Git Bash/WSL) atau `dumpbin` (dari Visual Studio)
+   - Executable 64-bit akan menunjukkan "PE32+" atau "x86-64"
+
+3. **Build manual dengan target 64-bit:**
+   ```powershell
+   # Pastikan Crystal adalah versi 64-bit
+   crystal env
+   
+   # Build dengan static linking (recommended)
+   crystal build src/bridge.cr --release --static -o bin/bridge.exe
+   
+   # Jika static linking gagal, coba tanpa static
+   crystal build src/bridge.cr --release -o bin/bridge.exe
+   ```
+
+4. **Pastikan Crystal yang terinstall adalah 64-bit:**
+   - Download Crystal untuk Windows 64-bit dari: https://crystal-lang.org/install/
+   - Atau install via package manager:
+     ```powershell
+     # Scoop (64-bit by default)
+     scoop install crystal
+     
+     # Chocolatey
+     choco install crystal
+     ```
+
+5. **Jika masih tidak jalan, cek error message:**
+   - Buka Command Prompt atau PowerShell
+   - Jalankan: `.\bin\bridge.exe`
+   - Perhatikan error message yang muncul
+   - Error "not a valid Win32 application" = executable 32-bit dijalankan di sistem 64-bit (atau sebaliknya)
+   - Error "missing DLL" = perlu static linking atau copy DLL
+
 ## Development
 
 Untuk development:
