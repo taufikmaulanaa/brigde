@@ -104,6 +104,8 @@ Contoh output:
 
 ## Installation
 
+### Linux / macOS
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -119,12 +121,74 @@ shards build
 ./bin/bridge
 ```
 
+### Windows
+
+#### Cara 1: Build langsung di Windows (Recommended)
+
+1. **Install Crystal untuk Windows:**
+   - Download dari: https://crystal-lang.org/install/
+   - Atau gunakan package manager:
+     ```powershell
+     # Menggunakan Scoop
+     scoop install crystal
+     
+     # Menggunakan Chocolatey
+     choco install crystal
+     ```
+
+2. **Build executable:**
+   ```powershell
+   # Install dependencies
+   shards install
+   
+   # Build untuk Windows (HANYA di Windows!)
+   .\build-windows.ps1
+   
+   # Atau manual
+   crystal build src/bridge.cr --release -o bin/bridge.exe
+   ```
+   
+   ⚠️ **PENTING**: File `build-windows.ps1` adalah PowerShell script dan **HANYA bisa dijalankan di Windows**.
+   Jika Anda di Linux/macOS, gunakan `./build-windows.sh` untuk cross-compile (atau gunakan GitHub Actions).
+
+3. **Jalankan:**
+   ```powershell
+   .\bin\bridge.exe
+   ```
+
+#### Cara 2: Cross-compile dari Linux/macOS
+
+Jika Anda ingin build untuk Windows dari Linux atau macOS:
+
+1. **Install MinGW-w64:**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install gcc-mingw-w64-x86-64
+   
+   # macOS
+   brew install mingw-w64
+   ```
+
+2. **Build menggunakan script:**
+   ```bash
+   chmod +x build-windows.sh
+   ./build-windows.sh
+   ```
+
+3. **File executable akan ada di `bin/bridge.exe`**
+
 ## Usage
 
 Untuk penggunaan sehari-hari, gunakan executable yang sudah di-build:
 
+**Linux/macOS:**
 ```bash
 ./bridge [excel_file] [source_folder]
+```
+
+**Windows:**
+```powershell
+.\bin\bridge.exe [excel_file] [source_folder]
 ```
 
 ## ❓ Troubleshooting
@@ -151,6 +215,7 @@ Untuk penggunaan sehari-hari, gunakan executable yang sudah di-build:
 
 Untuk development:
 
+**Linux/macOS:**
 ```bash
 # Run tanpa build
 shards run
@@ -162,6 +227,18 @@ shards run -- sample.xlsx files
 shards build --release
 ```
 
+**Windows:**
+```powershell
+# Run tanpa build
+shards run
+
+# Run dengan arguments
+shards run -- sample.xlsx files
+
+# Build untuk production
+crystal build src/bridge.cr --release -o bin/bridge.exe
+```
+
 ## Contributing
 
 1. Fork it (<https://github.com/taufikmaulanaa/bridge/fork>)
@@ -169,6 +246,14 @@ shards build --release
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## 🚀 Build Otomatis (CI/CD)
+
+Proyek ini menggunakan GitHub Actions untuk build otomatis untuk Windows. Setiap push ke branch `main` atau `master` akan otomatis build executable Windows.
+
+- **Workflow file**: `.github/workflows/build-windows.yml`
+- **Artifact**: Executable Windows akan tersedia sebagai artifact di GitHub Actions
+- **Release**: Saat membuat release, executable akan otomatis di-attach ke release
 
 ## Contributors
 

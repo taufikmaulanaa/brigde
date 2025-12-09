@@ -1,0 +1,45 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [ created ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Crystal
+      uses: crystal-lang/install-crystal@v1
+      with:
+        crystal-version: 'latest'
+        
+    - name: Install dependencies
+      run: shards install
+      
+    - name: Build for Windows
+      run: crystal build src/bridge.cr --release -o bin/bridge.exe
+      
+    - name: Upload Windows executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: bridge-windows
+        path: bin/bridge.exe
+        retention-days: 30
+        
+    - name: Create Release Asset (on release)
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: bin/bridge.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
