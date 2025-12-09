@@ -1,0 +1,18 @@
+name: bridge
+version: 0.1.0
+
+authors:
+  - taufikmaulanaa <taufikm9977@gmail.com>
+
+targets:
+  bridge:
+    main: src/bridge.cr
+
+dependencies:
+  xlsx-parser:
+    github: d1ceward/xlsx-parser
+    version: 1.4.0
+
+crystal: '>= 1.15.0'
+
+license: MIT
