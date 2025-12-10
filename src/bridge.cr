@@ -106,16 +106,27 @@ def rename_files(dir : String, mapping : Hash(String, String))
     # cek apakah mengandung no_doc
     mapping.each do |no_doc, new_name|
       if filename.downcase.includes?(no_doc.downcase)
-        # Buat folder "replaced" jika belum ada
+        # Buat folder "outputs" jika belum ada
         replaced_dir = "./outputs"
         Dir.mkdir_p(replaced_dir) unless Dir.exists?(replaced_dir)
 
-        new_path = File.join(replaced_dir, new_name)
+        # Ambil extension dari file asli
+        original_ext = File.extname(filename)
+        
+        # Jika new_name sudah punya extension, gunakan itu
+        # Jika tidak, tambahkan extension dari file asli
+        final_name = if new_name.includes?('.')
+          new_name
+        else
+          new_name + original_ext
+        end
+
+        new_path = File.join(replaced_dir, final_name)
         renamed_files += 1
         found_docs.add(no_doc)
 
         puts "\r✅ Copy & Rename (##{renamed_files}):"
-        puts "   #{filename} -> outputs/#{new_name}"
+        puts "   #{filename} -> outputs/#{final_name}"
 
         FileUtils.cp(filepath, new_path)
         break
