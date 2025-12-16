@@ -153,10 +153,12 @@ def rename_files(dir : String, mapping : Hash(String, Tuple(String, String?)))
         
         # Jika new_name sudah punya extension, gunakan itu
         # Jika tidak, tambahkan extension dari file asli
+        # Jika file asli tidak punya extension, gunakan .pdf sebagai default
         final_name = if new_name.includes?('.')
           new_name
         else
-          new_name + original_ext
+          ext_to_use = original_ext.empty? ? ".pdf" : original_ext
+          new_name + ext_to_use
         end
 
         new_path = File.join(output_dir, final_name)
