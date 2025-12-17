@@ -151,22 +151,50 @@ def rename_files(dir : String, mapping : Hash(String, Tuple(String, String?)))
         # Ambil extension dari file asli
         original_ext = File.extname(filename)
         
-        # Jika new_name sudah punya extension, gunakan itu
-        # Jika tidak, tambahkan extension dari file asli
-        # Jika file asli tidak punya extension, gunakan .pdf sebagai default
-        final_name = if new_name.includes?('.')
-          new_name
+        # Parse new_name: bisa berisi path (folder/subfolder/filename) atau hanya filename
+        # Normalize path separator untuk cross-platform compatibility
+        normalized_name = new_name.gsub('\\', '/')
+        
+        # Pisahkan path dan filename
+        if normalized_name.includes?('/')
+          path_parts = normalized_name.split('/')
+          file_name_part = path_parts.pop || ""
+          subfolder_path = path_parts.join('/')
+        else
+          file_name_part = normalized_name
+          subfolder_path = nil
+        end
+        
+        # Tentukan extension
+        final_filename = if file_name_part.includes?('.')
+          file_name_part
         else
           ext_to_use = original_ext.empty? ? ".pdf" : original_ext
-          new_name + ext_to_use
+          file_name_part + ext_to_use
+        end
+        
+        # Buat subfolder jika ada di new_name
+        target_dir = output_dir
+        if subfolder_path && !subfolder_path.empty?
+          # Sanitize setiap bagian path dan build path secara bertahap
+          sanitized_parts = subfolder_path.split('/').map { |part| sanitize_folder_name(part) }
+          # Build path dengan loop
+          sanitized_parts.each do |part|
+            target_dir = File.join(target_dir, part)
+          end
+          Dir.mkdir_p(target_dir) unless Dir.exists?(target_dir)
+          created_folders.add(target_dir) unless created_folders.includes?(target_dir)
         end
 
-        new_path = File.join(output_dir, final_name)
+        # Pastikan target directory ada
+        Dir.mkdir_p(target_dir) unless Dir.exists?(target_dir)
+        
+        new_path = File.join(target_dir, final_filename)
         renamed_files += 1
         found_docs.add(no_doc)
 
         # Tampilkan path relatif untuk output
-        relative_path = new_path.gsub(/^\.\//, "")
+        relative_path = new_path.gsub(/^\.\//, "").gsub('\\', '/')
         puts "\r✅ Copy & Rename (##{renamed_files}):"
         puts "   #{filename} -> #{relative_path}"
 
